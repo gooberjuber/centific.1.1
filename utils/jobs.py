@@ -1,5 +1,6 @@
+import json
 from databricks_api import DatabricksAPI
-from typing import Set, Dict
+from typing import Set, Dict, List
 from . import need
 
 # all_jobs returns a list of jobs associated to the account
@@ -12,3 +13,57 @@ def all_jobs(db: DatabricksAPI, needs: Set[str] = set()) -> Dict[str, any]:
     except Exception as e:
         print("*" * 10 + f"clusters.py -> list_clusters E : {e}")
         return {'status': False, "data": str(e)}
+
+# will create a job dunno if non ipynbs will work
+# job name is a string which is going to be the name of the pipeline
+# task_names is a list of strings where each item in list is the name of each task
+# paths is a list of notebook paths (absolute)
+# dependents a list where each item is a list string, if no dependents pass an empty list to that task
+# cluster ids a list of strings where each string is a cluster assigned
+'''
+ Sample tasks that is sent to the api
+ tasks = [
+ {
+ "task_key": "task_1",
+ "notebook_task": {
+ "notebook_path": "/path/to/notebook1"
+ },
+ "existing_cluster_id": "0911-051026-t7k7800r"
+ },
+ {
+ "task_key": "task_2",
+ "notebook_task": {
+ "notebook_path": "/path/to/notebook2"
+ },
+ "existing_cluster_id": "0911-051026-t7k7800r",
+ "depends_on": [{"task_key": "task_1"}]
+ }
+ ]'''
+def create_job(db: DatabricksAPI, job_name: str, task_names: List[str], paths: List[str], dependents: List[List[str]], cluster_ids: List[str]) -> Dict[str, any]:
+    if not len(task_names) == len(paths) == len(dependents) == len(cluster_ids):
+        print("jobs.py -> create_job() -> E : len of parameters not same")
+        return {'status': False, "data": "len of passed parameters are different"}
+    try:
+        tasks = []
+        for i in range(len(task_names)):
+            this_task = {
+                "task_key": task_names[i],
+                "notebook_task": {
+                    "notebook_path": paths[i]
+                },
+                "existing_cluster_id": cluster_ids[i]
+            }
+            if len(dependents[i]) > 0:
+                this_task['depends_on'] = []
+                for parent in dependents[i]:
+                    this_task['depends_on'].append({"task_key": parent})
+            tasks.append(this_task)
+        job_config = {
+            "name": job_name,
+            "tasks": tasks,
+        }
+        job_id = db.jobs.create_job(**job_config)
+        return {"status": True, "data": job_id}
+    except Exception as e:
+        print("jobs.py -> create_job() -> E : ", e)
+        return {"status": False, "data": str(e)}
