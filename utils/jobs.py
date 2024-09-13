@@ -67,3 +67,31 @@ def create_job(db: DatabricksAPI, job_name: str, task_names: List[str], paths: L
     except Exception as e:
         print("jobs.py -> create_job() -> E : ", e)
         return {"status": False, "data": str(e)}
+
+# run job takes db object and job_id as input parameters
+# triggers the run of the whole job and all tasks within
+def run_job(db: DatabricksAPI, job_id: str) -> Dict[str, any]:
+    try:
+        response = db.jobs.run_now(job_id=job_id)
+        return {'status': True, "data": response}
+    except Exception as e:
+        print("jobs.py -> run_job() -> E : ", e)
+        return {"status": False, "data": str(e)}
+
+# returns a job metadata
+def get_job(db: DatabricksAPI, job_id: str, needs: Set[str] = set()) -> Dict[str, any]:
+    try:
+        response = db.jobs.get_job(job_id=job_id)
+        return {'status': True, "data": need.need_only(needs, [response])}
+    except Exception as e:
+        print("jobs.py -> get_job() -> E : ", e)
+        return {"status": False, "data": str(e)}
+
+# gets all runs of job
+def get_job_runs(db: DatabricksAPI, job_id: str, needs: Set[str] = set()) -> Dict[str, any]:
+    try:
+        response = db.jobs.list_runs(job_id=job_id)['runs']
+        return {'status': True, "data": need.need_only(needs, response)}
+    except Exception as e:
+        print("jobs.py -> get_job_runs() -> E : ", e)
+        return {"status": False, "data": str(e)}
