@@ -42,3 +42,10 @@ def create_notebook(db: DatabricksAPI, path: str, content: dict) -> Dict[str, an
     except Exception as e:
         print("workspace.py -> create_notebook() -> E", e)
         return {'status': False, "data": str(e)}
+
+# This function is created specifically for the assistant to pass path directly this combines the above two fucntions
+
+def create_book_path(db : DatabricksAPI, upload_path : str, workspace_path : str):
+    content = read_ipynb(upload_path)
+    return create_notebook(db, workspace_path, content)
+

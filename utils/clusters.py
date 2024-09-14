@@ -1,6 +1,6 @@
 from typing import List, Dict, Set
 from databricks_api import DatabricksAPI
-from . import need
+import need
 
 # list_clusters returns a list of clusters associated to the account
 # pass the db object and a set of strings called needs, the clusters returned will have the passed 'needs' attributes only

@@ -1,7 +1,7 @@
 import json
 from databricks_api import DatabricksAPI
 from typing import Set, Dict, List
-from . import need
+import need
 
 # all_jobs returns a list of jobs associated to the account
 # pass the db object and a set of strings called needs, the jobs returned will have the passed 'needs' attributes only

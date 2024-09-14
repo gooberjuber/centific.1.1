@@ -1,5 +1,5 @@
 from databricks_api import DatabricksAPI
-from . import clusters
+import clusters
 
 # returns a db object with the specified host and token, so that it can be used for other functions
 def bricks_object(host: str, token: str) -> DatabricksAPI:
