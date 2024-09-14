@@ -95,3 +95,12 @@ def get_job_runs(db: DatabricksAPI, job_id: str, needs: Set[str] = set()) -> Dic
     except Exception as e:
         print("jobs.py -> get_job_runs() -> E : ", e)
         return {"status": False, "data": str(e)}
+    
+# gets run infomration
+def get_run(db: DatabricksAPI, run_id: str, needs: Set[str] = set()) -> Dict[str, any]:
+    try:
+        response = db.jobs.get_run(run_id=run_id)
+        return {'status': True, "data": need.need_only(needs, [response])}
+    except Exception as e:
+        print("jobs.py -> get_job_runs() -> E : ", e)
+        return {"status": False, "data": str(e)}
