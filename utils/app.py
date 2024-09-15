@@ -8,7 +8,6 @@ def get_lyra_response(user_input):
 
 def main():
     st.set_page_config(page_title="Chat with Lyra", page_icon="🤖", layout="centered")
-
     # Custom CSS
     st.markdown("""
     <style>
@@ -25,8 +24,8 @@ def main():
     """, unsafe_allow_html=True)
 
     # App header
-    st.title("Chat with Lyra")
-    st.markdown("Databricks Bot 🤖")
+    st.title("Talk with Lyra")
+    st.markdown("***Databricks Bot***")
 
     # Initialize chat history
     if "messages" not in st.session_state:
@@ -48,7 +47,7 @@ def main():
         with st.spinner("Lyra is thinking..."):
             lyra_response = get_lyra_response(prompt)
         with st.chat_message("assistant", avatar="🤖"):
-            st.markdown(lyra_response)
+            st.write(lyra_response)
         st.session_state.messages.append({"role": "assistant", "content": lyra_response})
 
     # Add a footer
