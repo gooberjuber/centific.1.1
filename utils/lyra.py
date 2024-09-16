@@ -4,12 +4,13 @@ from openai import OpenAI
 import mongo
 import json
 from clusters import list_clusters
-from workspace import all_files, create_book_path
+from workspace import all_files, create_book_path, direct_py_upload
 from jobs import create_job
 
 
 
 from databricks_api import DatabricksAPI
+
 
 
 
@@ -67,6 +68,11 @@ def GPTsideKick(gpt_response, thread_id):
             fn_response =  create_job(db, dependents=json.loads(intention.function.arguments)['dependents'], cluster_ids=json.loads(intention.function.arguments)['cluster_ids'], paths=json.loads(intention.function.arguments)['paths'], job_name=json.loads(intention.function.arguments)['job_name'], task_names=json.loads(intention.function.arguments)['task_names'])
             status, data = fn_response['status'], fn_response['data']
             if not status: print("*" * 10, "WARNING", "*" * 10 ,"could not insert challenge to DB")
+        
+        elif intention.function.name == "direct_py_upload":
+            fn_response = direct_py_upload(db, path=json.loads(intention.function.arguments)['path'], content=json.loads(intention.function.arguments)['content'])
+            status, data = fn_response['status'], fn_response['data']
+            if not status: print("*" * 10, "WARNING", "*" * 10 ,"could not insert challenge to DB")
 
         return {"status" : True, "data" : data}
    
@@ -97,9 +103,4 @@ def messageGPT(message : str, thread_id : str):
 
 
 
-t = getaThread()
-print(t)
 
-print(messageGPT("hi", t))
-print(messageGPT("create me a job sweet hear", t))
-print(messageGPT("want a job with 2 tasks say tosk1 and tosk2 and then the notbook path for both tasks is the same that is : /Workspace/Users/gooberjuber@outlook.com/code_multicelltest.ipynb and the clusters for both of them are 0911-051026-t7k7800r and tosk2 depedns on tosk1, tosk1 dont depend on anyone then forgot call the job lyra_child and dont ask me for confirmation just do it", t))
